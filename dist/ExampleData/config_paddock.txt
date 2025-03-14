@@ -1,6 +1,0 @@
-{"TYPE":0, "CARS":[
-    {"CN":22,"ITEMS":[
-        {"N": "watertemp","C": 1,"P":10,"U":"degF","T":117},
-        {"N": "oiltemp","C": 1,"P":100,"U":"degF","T":117},
-        {"N": "chillertemp","C": 1,"P":1,"U":"degC","T":117}
-]}]}

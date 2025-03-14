@@ -1,4 +1,0 @@
-{"TYPE": 1, "CN": 55, "GID": 2005, "BS": 1000000, "CAN":[
-    {"N": "watertemp", "C": 1, "P": 10, "U": "degreesF", "F": "100", "T": "u", "L": 0, "BO": 0, "BL": 16, "ID": 1795},
-    {"N": "oiltemp", "C": 1, "P": 100, "U": "degreesF", "F": "10", "T": "u", "L": 0, "BO": 16, "BL": 16, "ID": 1795},
-    {"N": "chillertemp", "C": 1, "P": 1, "U": "degreesC", "F": "10", "T": "u", "L": 0, "BO": 0, "BL": 16, "ID": 1796}]}
