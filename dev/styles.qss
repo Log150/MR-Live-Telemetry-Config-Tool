@@ -1,0 +1,171 @@
+MainWindow {
+    background-color: #0f0f0f;
+}
+
+PushButtonLE {
+    background-color: #292929;
+    color: white;
+    padding: 5px;
+    border-radius: 7px;
+
+    border: 1px solid black;
+}
+
+PushButtonLE#addEntryButton {
+    background-color: #1b1b1b;
+}
+
+PushButtonLE:hover {
+    color: #f1b82d;
+    background-color: #1f1f1f;
+    border: 1px solid #f1b82d;
+}
+
+QLabel{
+    color: white;
+}
+
+QRadioButton {
+    color: white;
+    padding: 5px;
+}
+
+QRadioButton:hover {
+    color: #f1b82d;
+    /*background-color:#202020;*/
+}
+
+QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 10px;
+    background-color: #292929;
+    border: 2px solid white;
+}
+
+QRadioButton::indicator:checked {
+    width: 16px;
+    height: 16px;
+    border-radius: 10px;
+    background-color: #f1b82d;
+    border: 2px solid white;
+}
+
+QRadioButton::indicator:hover {
+    width: 16px;
+    height: 16px;
+    border-radius: 10px;
+    background-color: #cfa027;
+    border: 2px solid white;
+}
+
+QCheckBox {
+    color: white;
+    padding: 5px;
+}
+
+QCheckBox:hover {
+    color: #f1b82d;
+    /*background-color:#202020;*/
+}
+
+QCheckBox::indicator {
+    background-color: #292929;
+    border: 1px solid white;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #f1b82d;
+    border: 1px solid white;
+}
+
+QCheckBox::indicator:hover {
+    background-color: #cfa027;
+    border: 1px solid white;
+}
+
+TextEditLE {
+    border-style: none;
+    background-color: #292929;
+    color: white;
+    border-radius: 3px;
+
+    border: 1px solid #c7c7c7;
+}
+
+TextEditLE:hover {
+    border: 1px solid #f1b82d;
+}
+
+NameNumberWindow{
+    background-color: #0f0f0f;
+}
+
+QMessageBox {
+    background-color: #0f0f0f;
+}
+
+QPushButton{
+    border-style: none;
+    background-color: #292929;
+    color: white;
+    padding: 5px;
+    border-radius: 7px;
+}
+
+QPushButton:hover {
+    color: #f1b82d;
+    background-color: #1f1f1f;
+}
+
+QTabWidget {
+    background-color: #292929;
+}
+
+QTabBar::tab {
+    background-color: #292929;
+    color: white;
+}
+
+QTabBar::tab:selected {
+    background-color: #1b1b1b;
+    color: #f1b82d;
+}
+
+QTabBar::tab:hover {
+    background-color: #1f1f1f;
+    color: #f1b82d;
+}
+
+GroupBoxLE {
+    color: white;
+    border-color: white;
+}
+
+GroupBoxLE:hover {
+    background-color: green;
+}
+
+OutputWindow {
+    background-color: #0f0f0f;
+    min-height: 600px;
+    min-width: 600px;
+}
+
+QWidget#scrollWidget {
+    /*background-color: green;*/
+    background-color: #292929;
+    
+}
+
+QWidget#combinedWidget {
+    /*background-color: green;*/
+    background-color: #292929;
+    
+}
+
+QScrollArea {
+    background-color: #292929;
+
+}
+
