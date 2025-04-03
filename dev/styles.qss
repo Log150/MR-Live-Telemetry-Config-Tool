@@ -5,10 +5,10 @@ MainWindow {
 PushButtonLE {
     background-color: #292929;
     color: white;
-    padding: 5px;
-    border-radius: 7px;
+    padding: 0.3125em;
+    border-radius: 0.4375em;
 
-    border: 1px solid black;
+    border: 0.0625em solid black;
 }
 
 PushButtonLE#addEntryButton {
@@ -18,7 +18,7 @@ PushButtonLE#addEntryButton {
 PushButtonLE:hover {
     color: #f1b82d;
     background-color: #1f1f1f;
-    border: 1px solid #f1b82d;
+    border: 0.0625em solid #f1b82d;
 }
 
 QLabel{
@@ -27,7 +27,7 @@ QLabel{
 
 QRadioButton {
     color: white;
-    padding: 5px;
+    padding: 0.3125em;
 }
 
 QRadioButton:hover {
@@ -36,65 +36,65 @@ QRadioButton:hover {
 }
 
 QRadioButton::indicator {
-    width: 16px;
-    height: 16px;
-    border-radius: 10px;
+    width: 1em;
+    height: 1em;
+    border-radius: 0.625em;
     background-color: #292929;
-    border: 2px solid white;
+    border: 0.125em solid white;
 }
 
 QRadioButton::indicator:checked {
-    width: 16px;
-    height: 16px;
-    border-radius: 10px;
+    width: 1em;
+    height: 1em;
+    border-radius: 0.625em;
     background-color: #f1b82d;
-    border: 2px solid white;
+    border: 0.125em solid white;
 }
 
 QRadioButton::indicator:hover {
-    width: 16px;
-    height: 16px;
-    border-radius: 10px;
-    background-color: #cfa027;
-    border: 2px solid white;
+    width: 1em;
+    height: 1em;
+    border-radius: 0.625em;
+    background-color: #b98e21;
+    border: 0.125em solid #f1b82d;
 }
 
 QCheckBox {
     color: white;
-    padding: 5px;
+    padding: 0.3125em;
 }
 
 QCheckBox:hover {
-    color: #f1b82d;
+    border-color: #f1b82d;
     /*background-color:#202020;*/
 }
 
 QCheckBox::indicator {
     background-color: #292929;
-    border: 1px solid white;
+    border: 0.125em solid white;
 }
 
 QCheckBox::indicator:checked {
     background-color: #f1b82d;
-    border: 1px solid white;
+    border: 0.125em solid white;
 }
 
 QCheckBox::indicator:hover {
-    background-color: #cfa027;
-    border: 1px solid white;
+    background-color: #b98e21;
+    border: 0.125em solid #f1b82d;
 }
 
 TextEditLE {
     border-style: none;
     background-color: #292929;
     color: white;
-    border-radius: 3px;
+    border-radius: 0.1875em;
 
-    border: 1px solid #c7c7c7;
+    border: 0.0625em solid #c7c7c7;
 }
 
 TextEditLE:hover {
-    border: 1px solid #f1b82d;
+    border: 0.0625em solid #f1b82d;
 }
 
 NameNumberWindow{
@@ -109,8 +109,8 @@ QPushButton{
     border-style: none;
     background-color: #292929;
     color: white;
-    padding: 5px;
-    border-radius: 7px;
+    padding: 0.3125em;
+    border-radius: 0.4375em;
 }
 
 QPushButton:hover {
@@ -148,8 +148,8 @@ GroupBoxLE:hover {
 
 OutputWindow {
     background-color: #0f0f0f;
-    min-height: 600px;
-    min-width: 600px;
+    min-height: 37.5em;
+    min-width: 45em;
 }
 
 QWidget#scrollWidget {
@@ -169,3 +169,6 @@ QScrollArea {
 
 }
 
+QWidget#BusSpeedRadioButtons {
+    min-width: 31.5em;
+}

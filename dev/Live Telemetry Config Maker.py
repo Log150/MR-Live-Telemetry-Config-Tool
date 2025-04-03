@@ -15,7 +15,7 @@ globalCarName = ""
 currentIndex = 0
 
 def saveAsButton(fileName,whatToSave,howToSave):
-    # reusable saving functio
+    # reusable saving function
 
     file = open(fileName, howToSave)
             
@@ -39,7 +39,7 @@ class TextEditLE(QTextEdit):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setMaximumHeight(25)
+        self.setMaximumHeight(27)
         self.setTabChangesFocus(True)
 
     def keyPressEvent(self, event):
@@ -172,7 +172,6 @@ class OutputWindow(QWidget):
             # Everything from here to the end of the function is just combining layouts and widgets to create the app's appearence
             settingsWidget = QWidget()
             settingsWidget.setObjectName("scrollWidget")
-            settingsWidget.setMaximumWidth(550)
             settingsWidget.setLayout(i.returnSettings())
             
             
@@ -276,7 +275,7 @@ class OutputWindow(QWidget):
 
             tabInstances[index].userEnterData["CN"] = int(listOfTextEdits[1].toPlainText())
 
-            tabInstances[index].userEnterData["GID"] = int(listOfTextEdits[2].toPlainText())
+            tabInstances[index].userEnterData["GID"] = int(listOfTextEdits[2].toPlainText(),16)
 
             tabInstances[index].userEnterData["BS"] = int(busRadio.checkedButton().speed)
 
@@ -298,7 +297,7 @@ class OutputWindow(QWidget):
             
             listOfTextEdits[1].setPlainText(str(tabInstances[index].userEnterData["CN"])) 
 
-            listOfTextEdits[2].setPlainText(str(tabInstances[index].userEnterData["GID"]))
+            listOfTextEdits[2].setPlainText(hex(tabInstances[index].userEnterData["GID"]))
 
             for i in typesRadioButtons:
                 if i.sendOrRecieve == int(tabInstances[index].userEnterData["TYPE"]):
@@ -492,6 +491,8 @@ class TabSystem(QWidget):
                         if lowestKey == "L":
                             # Edge case where the value of isLora is written out rather than just displaying the value
                             formattedData = QLabel(f"{i[0]}: {bool(value[lowestKey])}")
+                        elif lowestKey == "ID":
+                            formattedData = QLabel(f"{i[0]}: {hex(value[lowestKey])}")
                         else:
                             formattedData = QLabel(f"{i[0]}: {value[lowestKey]}")
                         groupBoxLayout.addWidget(formattedData)
@@ -609,6 +610,7 @@ class TabSystem(QWidget):
                 radioLayout2.addWidget(k)
 
             radioWidget2 = QWidget()
+            radioWidget2.setObjectName("BusSpeedRadioButtons")
             radioWidget2.setLayout(radioLayout2)
 
             settingsLayout.addWidget(radioWidget2,lableNameCounter-1,1)
@@ -753,7 +755,7 @@ class MainWindow(QWidget):
             lableNameCounter = lableNameCounter + 1
 
         #type should be a select box of string, int, float
-        addButton = PushButtonLE('Done', 
+        addButton = PushButtonLE('Save Entry', 
                                  clicked=lambda: self.addConfiguration(self.createdTextEdits, 
                                                                        self.freqButtonGroup, 
                                                                        self.typeButtonGroup, 
@@ -761,7 +763,7 @@ class MainWindow(QWidget):
                                                                        self.precisionButtonGroup))
 
 
-        editEntryButton = PushButtonLE('Done', 
+        editEntryButton = PushButtonLE('Save Entry', 
                                  clicked=lambda: self.editEntry(self.createdTextEdits, 
                                                                        self.freqButtonGroup, 
                                                                        self.typeButtonGroup, 
@@ -775,13 +777,33 @@ class MainWindow(QWidget):
                                                                        self.isLoraCheckbox.isChecked(),
                                                                        self.precisionButtonGroup))
         
+        addAndDoneButton = PushButtonLE('Done', 
+                                 clicked=lambda: self.doneWithEntry(self.createdTextEdits, 
+                                                                       self.freqButtonGroup, 
+                                                                       self.typeButtonGroup, 
+                                                                       self.isLoraCheckbox.isChecked(),
+                                                                       self.precisionButtonGroup,
+                                                                       "add"))
+        
+        editAndDoneButton = PushButtonLE('Done', 
+                                 clicked=lambda: self.doneWithEntry(self.createdTextEdits, 
+                                                                       self.freqButtonGroup, 
+                                                                       self.typeButtonGroup, 
+                                                                       self.isLoraCheckbox.isChecked(),
+                                                                       self.precisionButtonGroup,
+                                                                       "edit"))
+
 
         if MainWindow.windowMode == "add":
             layout.addWidget(addButton,lableNameCounter+1,0,1,2)
             self.setWindowTitle('Live Telemetry Config Maker - Add')
+
+            layout.addWidget(addAndDoneButton, lableNameCounter+2,0,1,2)
         else:
             layout.addWidget(editEntryButton,lableNameCounter+1,0,1,2)
             self.setWindowTitle('Live Telemetry Config Maker - Edit')
+
+            layout.addWidget(editAndDoneButton, lableNameCounter+2,0,1,4)
 
         layout.addWidget(deleteEntryButton,lableNameCounter+1,2,1,2)
 
@@ -822,6 +844,10 @@ class MainWindow(QWidget):
 
             if globalCarName == None:
                 errorReason = "No car is currently being edited. Please add or edit one."
+                raise Exception
+            
+            if len(textEdits[0].toPlainText()) > 32:
+                errorReason = "Character limit exceeded for 'Name'."
                 raise Exception
 
             if len(textEdits[2].toPlainText()) > 7:
@@ -899,6 +925,10 @@ class MainWindow(QWidget):
             if globalCarName == None:
                 errorReason = "No car is currently being edited. Please add or edit one."
                 raise Exception
+            
+            if len(textEdits[0].toPlainText()) > 32:
+                errorReason = "Character limit exceeded for 'Name'."
+                raise Exception
 
             if len(textEdits[2].toPlainText()) > 7:
                 errorReason = "Character limit exceeded for 'Unit'."
@@ -941,14 +971,21 @@ class MainWindow(QWidget):
         finally:
             msg.exec()
 
+    def doneWithEntry(self, textEdits, freqList, typeList, isLora, percisionList, mode):
+
+        if mode == "add":
+            self.addConfiguration(textEdits, freqList, typeList, isLora, percisionList)
+        else:
+            self.editEntry(textEdits, freqList, typeList, isLora, percisionList)
+
+        self.close()
+
     def deleteEntry(self, textEdits, freqList, typeList, isLora, percisionList):
         # Performs the same error checks as add but replaces the selected option rather than adding a new one
 
         global tabInstances, currentIndex
 
         msg = QMessageBox()
-
-        loopIndex = -1
 
         errorReason = "Non-numeric data entered into numeric fields."
 
@@ -979,43 +1016,44 @@ class MainWindow(QWidget):
                 errorReason = "No car is currently being edited. Please add or edit one."
                 raise Exception
 
-            if len(textEdits[2].toPlainText()) > 7:
-                errorReason = "Character limit exceeded for 'Unit'."
-                raise Exception
-
-            if jsonDictionary["BO"] < 0 or jsonDictionary["BO"] > 64:
-                errorReason = "Bit Offset outside of 0-64 range."
-                raise Exception
             
-            if jsonDictionary["BL"] < 1 or jsonDictionary["BL"] > 64:
-                errorReason = "Bit Length outside of 1-64 range."
-                raise Exception
+            areYouSureButtons = QMessageBox(self)
+            areYouSureButtons.setWindowTitle("Delete Entry?")
+            areYouSureButtons.setText("Are you sure you want to delete this entry?")
+            areYouSureButtons.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            areYouSureButtons.setIcon(QMessageBox.Question)
 
-            # Entire loop works exactly as edit but replaces the reassignment with popping
-            if globalCarName in tabInstances[currentIndex].userEnterData:
-                for i in tabInstances[currentIndex].userEnterData[globalCarName]:
+            verification = areYouSureButtons.exec()
 
-                    if tabInstances[currentIndex].userEnterData[globalCarName].index(i) == self.carLoopIndex:
-                        tabInstances[currentIndex].userEnterData[globalCarName].pop(loopIndex)
+            if verification == QMessageBox.Yes:
+                # Entire loop works exactly as edit but replaces the reassignment with popping
+                if globalCarName in tabInstances[currentIndex].userEnterData:
+                    for i in tabInstances[currentIndex].userEnterData[globalCarName]:
+
+                        if tabInstances[currentIndex].userEnterData[globalCarName].index(i) == self.carLoopIndex:
+                            tabInstances[currentIndex].userEnterData[globalCarName].pop(self.carLoopIndex)
+                        
+
+                    msg.setText("Entry successfully deleted!")
+                    msg.setWindowTitle("Success")
+
+                    window.reloadText()
+                    window.update()
+
+                    self.close()
+
+                else:
                     
+                    msg.setText(f"Entry not present, please check spelling or add the entry.\n{globalCarName}")
+                    msg.setWindowTitle("Error")
 
-                msg.setText("Entry successfully deleted!")
-                msg.setWindowTitle("Success")
-
-                window.reloadText()
-                window.update()
-
-            else:
-                
-                msg.setText(f"Entry not present, please check spelling or add the entry.\n{globalCarName}")
-                msg.setWindowTitle("Error")
+                msg.exec()
         
         except:
             msg.setText(errorReason)
             msg.setWindowTitle("Error")
-
-        finally:
             msg.exec()
+
 
     def setPlaceholderData(self,userData):
         # Takes the data set in OutputWindow and sets into the MainWindow
@@ -1053,7 +1091,7 @@ class MainWindow(QWidget):
 
         self.createdTextEdits[8].setPlainText(str(userData[globalCarName][self.carLoopIndex]["BL"]))
 
-        self.createdTextEdits[9].setPlainText(str(userData[globalCarName][self.carLoopIndex]["ID"]))
+        self.createdTextEdits[9].setPlainText(hex(userData[globalCarName][self.carLoopIndex]["ID"]))
 
 
 
@@ -1064,7 +1102,12 @@ if __name__ == "__main__":
 
     app.setStyle('Fusion')
 
-    stylesheet = loadFile("styles.qss")
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        print('running in a PyInstaller bundle')
+        stylesheet = loadFile(sys._MEIPASS + "/styles.qss")
+    else:
+        print('running in a normal Python process')
+        stylesheet = loadFile("./dev/styles.qss")
 
     app.setStyleSheet(stylesheet)
     

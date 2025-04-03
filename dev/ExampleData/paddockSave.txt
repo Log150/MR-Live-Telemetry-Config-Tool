@@ -1,0 +1,12 @@
+{"TYPE": 0, "CARS":[
+    {"CN": 55, "ITEMS":[
+    {"N": "watertemp", "C": 1.0, "P": 10, "U": "degreeF", "T": 102},
+    {"N": "oiltemp", "C": 1, "P": 100, "U": "degreesF", "T": "u"},
+    {"N": "chillertemp", "C": 1, "P": 1, "U": "degreesC", "T": "u"}]},
+    {"CN": 216, "ITEMS":[
+    {"N": "formatTest", "C": 1.2, "P": 10, "U": "N/A", "T": 105},
+    {"N": "test", "C": 1.2, "P": 100, "U": "N/A", "T": 117}]},
+    {"CN": 22, "ITEMS":[
+    {"N": "newTest", "C": 1.2, "P": 10, "U": "N/A", "T": "s"},
+    {"N": "newTest2", "C": 1.6, "P": 100, "U": "N/A", "T": "s"}]}
+]}
