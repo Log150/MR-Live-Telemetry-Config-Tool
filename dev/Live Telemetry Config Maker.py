@@ -798,7 +798,7 @@ class MainWindow(QWidget):
             layout.addWidget(addButton,lableNameCounter+1,0,1,2)
             self.setWindowTitle('Live Telemetry Config Maker - Add')
 
-            layout.addWidget(addAndDoneButton, lableNameCounter+2,0,1,2)
+            layout.addWidget(addAndDoneButton, lableNameCounter+2,0,1,4)
         else:
             layout.addWidget(editEntryButton,lableNameCounter+1,0,1,2)
             self.setWindowTitle('Live Telemetry Config Maker - Edit')
@@ -1082,9 +1082,13 @@ class MainWindow(QWidget):
             if i.dataType == userData[globalCarName][self.carLoopIndex]["T"]:
                 i.setChecked(True)
 
-        for i in userData[globalCarName]:
-            if i["L"] == 1:
-                self.isLoraCheckbox.setChecked(True)
+        for i in userData[globalCarName][self.carLoopIndex]:
+
+            if i == "L":
+                if userData[globalCarName][self.carLoopIndex][i] == 1:
+                    self.isLoraCheckbox.setChecked(True)
+                else:
+                    self.isLoraCheckbox.setChecked(False)
 
 
         self.createdTextEdits[7].setPlainText(str(userData[globalCarName][self.carLoopIndex]["BO"]))
