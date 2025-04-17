@@ -119,7 +119,6 @@ class OutputWindow(QWidget):
 
         # Removes any tabs created prior to the running of function.
         # This prevents duplicate tabs from appearing upon refresh.
-
         while self.tabs.count():
             self.tabs.removeTab(0)
 
@@ -128,7 +127,6 @@ class OutputWindow(QWidget):
             if item.widget():
                 item.widget().deleteLater()
 
-        
 
         # Begins creation of the UI. Starting with the buttons seen in __init__()
         newFileButton = PushButtonLE('New File')
@@ -153,9 +151,7 @@ class OutputWindow(QWidget):
         self.layout.addWidget(doneButton,0,3)
         
 
-
         for i in tabInstances:
-
             # begins the process of making tabs and adding the groupboxes to said tabs
             tabMaker = QScrollArea()
             tabMaker.setWidgetResizable(True)
@@ -185,7 +181,6 @@ class OutputWindow(QWidget):
             combinedWidget.setLayout(layoutCombined)
 
 
-
             tabMaker.setWidget(combinedWidget)
 
 
@@ -205,7 +200,7 @@ class OutputWindow(QWidget):
         
         directory = QFileDialog.getSaveFileName(self, "Save File", "", "Text Files (*.txt);;All Files (*)", options=options)
 
-        if directory:
+        if directory[0] != '':
         
             paddock = {
                 "TYPE": 0,
@@ -217,9 +212,15 @@ class OutputWindow(QWidget):
 
                 unneededItems = ["F","L","BO","BL","ID"]
                 
-                for j in i.userEnterData["CAN"]:
+                for j in dictionaryCopy["CAN"]:
+                    if j["L"] != 1:    
+                        dictionaryCopy["CAN"].pop(dictionaryCopy["CAN"].index(j))
+
+
+                for j2 in dictionaryCopy["CAN"]:
                     for k in unneededItems:
-                        dictionaryCopy["CAN"][i.userEnterData["CAN"].index(j)].pop(k)
+                        dictionaryCopy["CAN"][dictionaryCopy["CAN"].index(j2)].pop(k)
+
                 
                 carIndex = {
                     "CN": dictionaryCopy["CN"],
@@ -239,6 +240,11 @@ class OutputWindow(QWidget):
             dumpedFile = dumpedFile.replace('}]}]}', '}]}\n]}')
             
             saveAsButton(directory[0],dumpedFile,"w")
+
+            msg = QMessageBox()
+            msg.setText(f"Paddock has been successfully saved!")
+            msg.setWindowTitle("Saved")
+            msg.exec()
 
 
     def tabIndex(self, index):
@@ -320,13 +326,13 @@ class OutputWindow(QWidget):
         
         global tabInstances, currentIndex
 
-        tabInstances.append(TabSystem())
-
         options = QFileDialog.Options()
         
         directory = QFileDialog.getSaveFileName(self, "Save File", "", "Text Files (*.txt);;All Files (*)", options=options)
 
-        if directory:
+        if directory[0] != '':
+            tabInstances.append(TabSystem())    
+            
             tabInstances[len(tabInstances)-1].userDirectory = directory[0]
 
             #Reciever or Sender
@@ -366,7 +372,7 @@ class OutputWindow(QWidget):
         
         directory = QFileDialog.getOpenFileName(self, "Open File", "", "Text Files (*.txt);;All Files (*)", options=options)
 
-        if directory:
+        if directory[0] != '':
             tabInstances[len(tabInstances)-1].userDirectory = directory[0]
             #userDirectory = directory[0]
 
@@ -411,6 +417,8 @@ class OutputWindow(QWidget):
 
 
             saveAsButton(tabInstances[index].userDirectory,dumpedFile,"w")
+
+            tabInstances[index].userEnterData = json.loads(dumpedFile)
 
             msg.setText("File saved successfully!")
             msg.setWindowTitle("Success")
