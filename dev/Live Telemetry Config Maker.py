@@ -368,11 +368,12 @@ class OutputWindow(QWidget):
 
         msg = QMessageBox()
 
-        tabInstances.append(TabSystem())
         
         directory = QFileDialog.getOpenFileName(self, "Open File", "", "Text Files (*.txt);;All Files (*)", options=options)
 
         if directory[0] != '':
+            tabInstances.append(TabSystem())
+
             tabInstances[len(tabInstances)-1].userDirectory = directory[0]
             #userDirectory = directory[0]
 
