@@ -2,6 +2,10 @@ MainWindow {
     background-color: #0f0f0f;
 }
 
+QDialog {
+    background-color: #0f0f0f;
+}
+
 PushButtonLE {
     background-color: #292929;
     color: white;
@@ -23,6 +27,19 @@ PushButtonLE:hover {
 
 QLabel{
     color: white;
+}
+
+QComboBox {
+    background-color: #292929;
+    color: white;
+}
+
+QComboBox:selected {
+    color: #f1b82d;;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #202020;
 }
 
 QRadioButton {

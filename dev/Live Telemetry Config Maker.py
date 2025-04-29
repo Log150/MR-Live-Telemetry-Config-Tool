@@ -83,9 +83,11 @@ class OutputWindow(QWidget):
     def __init__(self):
         # general initilization. Draws what the program looks like before you create or load a file
         
-        super().__init__()        
+        super().__init__()
 
-        self.setWindowTitle('Live Telemetry Config Maker')
+        versionNumber = "1.2.0"
+
+        self.setWindowTitle(f'Live Telemetry Config Maker {versionNumber}')
 
         self.setWindowIcon(QIcon("TempIco.png"))
         
@@ -191,60 +193,87 @@ class OutputWindow(QWidget):
 
             self.layout.addWidget(self.tabs,1,0,1,4)
 
-            self.loadHeaderData(i.typeRadioButtons, i.createdTextEdits, i.busSpeedRadioButtons, tabInstances.index(i))
+            self.loadHeaderData(i.typeRadioButtons, i.createdTextEdits, i.busSpeedRadioButtons, i.loraFreqBox, tabInstances.index(i))
 
 
     def createPaddock(self, tabInstances):
-        # takes all the needed information from all the loaded files and outputs them in the paddock format
-        options = QFileDialog.Options()
-        
-        directory = QFileDialog.getSaveFileName(self, "Save File", "", "Text Files (*.txt);;All Files (*)", options=options)
+        LFComboBox = self.createLFComboBox()
 
-        if directory[0] != '':
-        
-            paddock = {
-                "TYPE": 0,
-                "CARS": []
-            }
+        paddockConfig = QDialog()
+        paddockConfig.setWindowTitle("Paddock Config")
 
-            for i in tabInstances:
-                dictionaryCopy = i.userEnterData.copy()
+        layout = QGridLayout()
 
-                unneededItems = ["F","L","BO","BL","ID"]
-                
-                for j in dictionaryCopy["CAN"]:
-                    if j["L"] != 1:    
-                        dictionaryCopy["CAN"].pop(dictionaryCopy["CAN"].index(j))
+        layout.addWidget(QLabel("Live Telemetry Frequency: "),0,0)
 
+        layout.addWidget(LFComboBox, 0, 1)
 
-                for j2 in dictionaryCopy["CAN"]:
-                    for k in unneededItems:
-                        dictionaryCopy["CAN"][dictionaryCopy["CAN"].index(j2)].pop(k)
+        savePadButton = PushButtonLE('Save')
 
-                
-                carIndex = {
-                    "CN": dictionaryCopy["CN"],
-                    "ITEMS": []
+        cancelPadSaveButton = PushButtonLE('Cancel')
+
+        layout.addWidget(savePadButton,1,0)
+        layout.addWidget(cancelPadSaveButton,1,1)
+
+        paddockConfig.setLayout(layout)
+
+        savePadButton.clicked.connect(paddockConfig.accept)
+        cancelPadSaveButton.clicked.connect(paddockConfig.reject)
+
+        result = paddockConfig.exec_()
+
+        if result == QDialog.Accepted:
+            # takes all the needed information from all the loaded files and outputs them in the paddock format
+            options = QFileDialog.Options()
+            
+            directory = QFileDialog.getSaveFileName(self, "Save File", "", "Text Files (*.txt);;All Files (*)", options=options)
+
+            if directory[0] != '':
+            
+                paddock = {
+                    "TYPE": 0,
+                    "LFS": int(LFComboBox.currentText()),
+                    "CARS": []
                 }
 
-                for j in dictionaryCopy["CAN"]:
-                    carIndex["ITEMS"].append(j)
+                for i in tabInstances:
+                    dictionaryCopy = i.userEnterData.copy()
+
+                    unneededItems = ["F","L","BO","BL","ID"]
+                    
+                    for j in dictionaryCopy["CAN"]:
+                        if j["L"] != 1:    
+                            dictionaryCopy["CAN"].pop(dictionaryCopy["CAN"].index(j))
+
+
+                    for j2 in dictionaryCopy["CAN"]:
+                        for k in unneededItems:
+                            dictionaryCopy["CAN"][dictionaryCopy["CAN"].index(j2)].pop(k)
+
+                    
+                    carIndex = {
+                        "CN": dictionaryCopy["CN"],
+                        "ITEMS": []
+                    }
+
+                    for j in dictionaryCopy["CAN"]:
+                        carIndex["ITEMS"].append(j)
+                    
+                    paddock["CARS"].append(carIndex)
+
+                dumpedFile = json.dumps(paddock)
+
+                dumpedFile = dumpedFile.replace(': [{', ':[\n    {')
+                dumpedFile = dumpedFile.replace('}], ', '}\n],\n')
+                dumpedFile = dumpedFile.replace('}, {', '},\n    {')
+                dumpedFile = dumpedFile.replace('}]}]}', '}]}\n]}')
                 
-                paddock["CARS"].append(carIndex)
+                saveAsButton(directory[0],dumpedFile,"w")
 
-            dumpedFile = json.dumps(paddock)
-
-            dumpedFile = dumpedFile.replace(': [{', ':[\n    {')
-            dumpedFile = dumpedFile.replace('}], ', '}\n],\n')
-            dumpedFile = dumpedFile.replace('}, {', '},\n    {')
-            dumpedFile = dumpedFile.replace('}]}]}', '}]}\n]}')
-            
-            saveAsButton(directory[0],dumpedFile,"w")
-
-            msg = QMessageBox()
-            msg.setText(f"Paddock has been successfully saved!")
-            msg.setWindowTitle("Saved")
-            msg.exec()
+                msg = QMessageBox()
+                msg.setText(f"Paddock has been successfully saved!")
+                msg.setWindowTitle("Saved")
+                msg.exec()
 
 
     def tabIndex(self, index):
@@ -257,7 +286,7 @@ class OutputWindow(QWidget):
             print(currentIndex)
 
     
-    def saveHeaderData(self, typesRadio, listOfTextEdits, busRadio, index):
+    def saveHeaderData(self, typesRadio, listOfTextEdits, busRadio, loraFreqBox, index):
         # As is the title of the function this saves the header data
         
         global tabInstances, currentIndex
@@ -285,6 +314,8 @@ class OutputWindow(QWidget):
 
             tabInstances[index].userEnterData["BS"] = int(busRadio.checkedButton().speed)
 
+            tabInstances[index].userEnterData["LF"] = int(loraFreqBox.currentText())
+
         except Exception as err:
             print(err)
             msg = QMessageBox()
@@ -293,7 +324,7 @@ class OutputWindow(QWidget):
             msg.exec()
         
 
-    def loadHeaderData(self, typesRadioButtons, listOfTextEdits, busRadioButtons, index):
+    def loadHeaderData(self, typesRadioButtons, listOfTextEdits, busRadioButtons, loraFreqBox, index):
         # loads the header data. Is called at the end of reload text so when a file is loaded you always have its data
 
         global tabInstances, currentIndex
@@ -312,6 +343,26 @@ class OutputWindow(QWidget):
             for i in busRadioButtons:
                 if i.speed == int(tabInstances[index].userEnterData["BS"]):
                     i.setChecked(True)
+
+
+            MainValue = 913500000
+            SecondaryValue = 1500000
+            numberOfOptions = 9
+            listOfOPtions = []
+
+            loops = 0
+            while numberOfOptions > loops:
+                listOfOPtions.append(MainValue-(SecondaryValue*loops))
+                loops+=1
+
+            print("-------\n" + loraFreqBox.currentText())
+
+            savedFreq = int(tabInstances[index].userEnterData["LF"])
+            print(savedFreq)
+            if savedFreq in listOfOPtions:
+                loraFreqBox.setCurrentIndex(listOfOPtions.index(savedFreq))
+
+
 
         except Exception as err:
             print(err)
@@ -350,6 +401,8 @@ class OutputWindow(QWidget):
             #CAN Bus Speed
             # INT
             tabInstances[len(tabInstances)-1].userEnterData["BS"] = 1000000
+
+            tabInstances[len(tabInstances)-1].userEnterData["LF"] = 0
 
             # If you're on the racing team you should know of CAN
             # This is the array of configs
@@ -408,7 +461,7 @@ class OutputWindow(QWidget):
 
         try:
 
-            self.saveHeaderData(tabInstances[index].typeButtonGroup, tabInstances[index].createdTextEdits, tabInstances[index].busSpeedButtonGroup, index)
+            self.saveHeaderData(tabInstances[index].typeButtonGroup, tabInstances[index].createdTextEdits, tabInstances[index].busSpeedButtonGroup, tabInstances[index].loraFreqBox, index)
 
             dumpedFile = json.dumps(tabInstances[index].userEnterData)
 
@@ -431,6 +484,22 @@ class OutputWindow(QWidget):
 
         finally:
             msg.exec()
+
+    def createLFComboBox(self):
+        
+        MainValue = 913500000
+        SecondaryValue = 1500000
+        numberOfOptions = 9
+
+        LFComboBox = QComboBox()
+        LFComboBox.addItem('0')
+
+        loops = 0
+        while numberOfOptions > loops:
+            LFComboBox.addItem(str(MainValue-(SecondaryValue*(loops+1))))
+            loops+=1
+
+        return LFComboBox
 
 
 class TabSystem(QWidget):
@@ -571,9 +640,11 @@ class TabSystem(QWidget):
             
             # Below dynamically creates lables based off the below list. It also creates TextEditLE for the two text inputs
             #namesForLables = [["TYPE","TYPE"], ["CN","Car Number"], ["GID","Global Time ID"], ["BS", "Bus Speed"]]
-            namesForLables = [["CN","Car Number"], ["GID","Global Time ID"], ["BS", "Bus Speed"]]
+            namesForLables = [["CN","Car Number"], ["GID","Global Time ID"], ["LF", "LORA Frequency"], ["BS", "Bus Speed"]]
 
             self.createdTextEdits = []
+
+            self.loraFreqBox = OutputWindow.createLFComboBox(self)
             
             # Index 0 and 3 are unused. Modifying them is useless
             while len(self.createdTextEdits) < len(namesForLables):
@@ -593,7 +664,7 @@ class TabSystem(QWidget):
 
                 lableNameCounter = lableNameCounter + 1
             
-            
+            settingsLayout.addWidget(self.loraFreqBox,lableNameCounter-2,1)
 
             # The below blocked out function dynamically creates radio buttons
             # Almost identical to the blocked out portion at line 248
